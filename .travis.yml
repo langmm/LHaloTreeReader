@@ -1,0 +1,69 @@
+language: python
+sudo: required
+cache:
+  pip: true
+  directories:
+    - $HOME/.ccache  # https://github.com/travis-ci/travis-ci/issues/5853
+
+env:
+  global:
+    NUMPY=numpy
+    CYTHON=cython
+    MATPLOTLIB=matplotlib
+    MPLBACKEND=agg
+    PYLHT_COVERAGE=False  # Keep coverage turned off to improve speed
+
+matrix:
+  include:
+    - python: 2.7
+      env: NUMPY=numpy==1.10.4 CYTHON=cython==0.24 MATPLOTLIB=matplotlib==1.5.3
+    - python: 2.7
+      env: PYLHT_COVERAGE=True CYTHON=https://github.com/langmm/cython/archive/coverage.tar.gz
+    - python: 3.4
+    - python: 3.5
+    - python: 3.6
+    - os: osx
+      osx_image: xcode7.3
+      language: generic  # https://github.com/travis-ci/travis-ci/issues/2312
+      cache:
+        pip: false
+        directories:
+          - $HOME/Library/Caches/pip
+          # `cache` does not support `env`-like `global` so copy-paste from top
+          - $HOME/.ccache  # https://github.com/travis-ci/travis-ci/issues/5853
+
+before_install:
+  - |
+    if [[ $TRAVIS_OS_NAME != 'osx' ]]; then
+      pip install --upgrade virtualenv
+      python -m virtualenv venv
+      source venv/bin/activate
+      export PATH=/usr/lib/ccache:$PATH
+    else
+      brew update
+      brew install ccache
+      export PATH=/usr/local/opt/ccache/libexec:$PATH
+    fi
+
+install:
+  - |
+    # setup environment
+    ccache -s
+    # Upgrade pip and setuptools and wheel to get clean install
+    pip install --upgrade pip
+    pip install --upgrade wheel
+    pip install --upgrade setuptools
+    # Install dependencies
+    pip install $NUMPY $CYTHON $MATPLOTLIB nose coverage coveralls flake8
+    # install pylht
+    pip install -e .
+
+before_script:
+  - flake8 pylht
+
+script:
+  - |
+    nosetests --nologcapture --with-coverage --cover-package=pylht -sv pylht
+
+after_success:
+  - coveralls

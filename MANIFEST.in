@@ -1,0 +1,9 @@
+include *.md
+include *.txt
+recursive-include pylht *.c
+recursive-include pylht *.h
+recursive-include pylht *.pxd
+recursive-include pylht *.py
+recursive-include pylht *.pyx
+graft docs
+

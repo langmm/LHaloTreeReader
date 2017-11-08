@@ -1,35 +1,9 @@
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+syntax: glob
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
+.coverage*
+/htmlcov/*
+pylht.egg-info/
 *.so
-*.so.*
-*.dylib
-
-# Executables
-read_lhalotree
-examples/find_flybys
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
+*.o
+*.pyc
+*~
